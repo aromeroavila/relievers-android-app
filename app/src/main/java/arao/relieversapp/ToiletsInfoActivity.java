@@ -18,6 +18,7 @@ import java.util.TimerTask;
 
 import arao.relieversapp.model.Room;
 import arao.relieversapp.net.Book;
+import arao.relieversapp.net.Maintenance;
 import arao.relieversapp.net.RoomsStatus;
 import arao.relieversapp.net.ServiceGenerator;
 import retrofit2.Call;
@@ -28,9 +29,11 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
     private TextView mNextInTheQueue;
     private TextView mYouAreInTheQueue;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_toilets_info);
 
         mRoomListAdapter = new RoomListAdapter();
@@ -63,13 +66,14 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (((Room) mRoomListAdapter.getItem(position)).isAvailable()) {
+        final Room item = (Room) mRoomListAdapter.getItem(position);
+        if (item.isAvailable() && !item.isInQuarantine()) {
             new AlertDialog.Builder(ToiletsInfoActivity.this)
                     .setTitle("pOops!!")
-                    .setMessage("Do you crap to repoort a pooblem?")
+                    .setMessage("Would you like to repoort a pooblem?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
+                            new MaintenanceRequestExecutor().execute(item.getId());
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -130,4 +134,26 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
             }
         }
     }
+
+    public class MaintenanceRequestExecutor extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            Maintenance service = ServiceGenerator.createService(Maintenance.class);
+            Call<Void> report = service.report(params[0]);
+            try {
+                report.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void nothing) {
+
+        }
+    }
+
 }

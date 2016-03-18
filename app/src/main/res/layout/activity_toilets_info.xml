@@ -11,6 +11,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ToiletsInfoActivity">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/pop__box" />
+
     <ListView
         android:id="@+id/rooms_list"
         android:layout_width="match_parent"
@@ -50,8 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="15dp"
-        android:textStyle="bold"
+        android:text="BOOK"
         android:textSize="16sp"
-        android:text="BOOK" />
+        android:textStyle="bold" />
 
 </LinearLayout>

@@ -6,10 +6,12 @@ public class Room {
     private String name;
     private long time;
     private boolean available;
+    private boolean inQuarantine;
 
-    public Room(boolean available, String id, String name, long time) {
+    public Room(boolean available, String id, boolean inQuarantine, String name, long time) {
         this.available = available;
         this.id = id;
+        this.inQuarantine = inQuarantine;
         this.name = name;
         this.time = time;
     }
@@ -44,5 +46,13 @@ public class Room {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public boolean isInQuarantine() {
+        return inQuarantine;
+    }
+
+    public void setInQuarantine(boolean inQuarantine) {
+        this.inQuarantine = inQuarantine;
     }
 }

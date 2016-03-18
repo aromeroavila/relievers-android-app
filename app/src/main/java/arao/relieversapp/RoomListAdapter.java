@@ -66,6 +66,7 @@ public class RoomListAdapter extends BaseAdapter {
             viewHolder.status = (TextView) convertView.findViewById(R.id.room_status);
             viewHolder.time = (TextView) convertView.findViewById(R.id.room_timer);
             viewHolder.chronometer = (Chronometer) convertView.findViewById(R.id.room_clock);
+            viewHolder.mins = (TextView) convertView.findViewById(R.id.mins);
 
             convertView.setTag(viewHolder);
         } else {
@@ -76,7 +77,8 @@ public class RoomListAdapter extends BaseAdapter {
 
         if (mPreviousRoomList == null) {
             fillView(viewHolder, room);
-        } else if (mPreviousRoomList.get(position).isAvailable() != room.isAvailable()) {
+        } else if (mPreviousRoomList.get(position).isAvailable() != room.isAvailable()
+                || mPreviousRoomList.get(position).isInQuarantine() != room.isInQuarantine()) {
             fillView(viewHolder, room);
         }
 
@@ -85,15 +87,24 @@ public class RoomListAdapter extends BaseAdapter {
 
     private void fillView(ViewHolder viewHolder, Room room) {
         viewHolder.title.setText(room.getName());
-        viewHolder.status.setText(room.isAvailable() ? "AVAILABLE" : "BUSY");
-        viewHolder.item.setBackground(room.isAvailable() ?
-                mResources.getDrawable(R.drawable.green_round_corners) : mResources.getDrawable(R.drawable.red_round_corners));
-
-        viewHolder.time.setText(room.isAvailable() ?
-                "Run!! It's been free for  " : "Employee slacking off for  ");
-        viewHolder.chronometer.stop();
-        viewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
-        viewHolder.chronometer.start();
+        if (room.isInQuarantine()) {
+            viewHolder.status.setText("MAINTENANCE");
+            viewHolder.item.setBackground(mResources.getDrawable(R.drawable.yellow_round_corners));
+            viewHolder.time.setText("Toilet is out of service... again");
+            viewHolder.chronometer.setVisibility(View.GONE);
+            viewHolder.mins.setVisibility(View.GONE);
+        } else {
+            viewHolder.status.setText(room.isAvailable() ? "AVAILABLE" : "BUSY");
+            viewHolder.item.setBackground(room.isAvailable() ?
+                    mResources.getDrawable(R.drawable.green_round_corners) : mResources.getDrawable(R.drawable.red_round_corners));
+            viewHolder.time.setText(room.isAvailable() ?
+                    "Run!! It's been free for  " : "Employee slacking off for  ");
+            viewHolder.mins.setVisibility(View.VISIBLE);
+            viewHolder.chronometer.setVisibility(View.VISIBLE);
+            viewHolder.chronometer.stop();
+            viewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
+            viewHolder.chronometer.start();
+        }
     }
 
     static class ViewHolder {
@@ -102,6 +113,7 @@ public class RoomListAdapter extends BaseAdapter {
         TextView status;
         TextView time;
         Chronometer chronometer;
+        TextView mins;
     }
 
 }
