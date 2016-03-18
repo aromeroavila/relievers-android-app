@@ -1,8 +1,10 @@
 package arao.relieversapp;
 
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,7 +12,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +25,8 @@ import retrofit2.Call;
 public class ToiletsInfoActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private RoomListAdapter mRoomListAdapter;
-    private TextView mQueue;
+    private TextView mNextInTheQueue;
+    private TextView mYouAreInTheQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,8 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_toilets_info);
 
         mRoomListAdapter = new RoomListAdapter();
-        mQueue = (TextView) findViewById(R.id.queue);
+        mNextInTheQueue = (TextView) findViewById(R.id.next_in_the_queue);
+        mYouAreInTheQueue = (TextView) findViewById(R.id.you_are);
         ListView roomList = (ListView) findViewById(R.id.rooms_list);
         roomList.setAdapter(mRoomListAdapter);
         roomList.setOnItemClickListener(this);
@@ -60,7 +63,23 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        if (((Room) mRoomListAdapter.getItem(position)).isAvailable()) {
+            new AlertDialog.Builder(ToiletsInfoActivity.this)
+                    .setTitle("pOops!!")
+                    .setMessage("Do you crap to repoort a pooblem?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
     }
 
     public class BookRequestExecutor extends AsyncTask<Void, Void, int[]> {
@@ -82,7 +101,8 @@ public class ToiletsInfoActivity extends AppCompatActivity implements View.OnCli
         @Override
         protected void onPostExecute(int[] rooms) {
             if (rooms != null) {
-                mQueue.setText(Arrays.toString(rooms));
+                mNextInTheQueue.setText("Calling now:   " + rooms[0]);
+                mYouAreInTheQueue.setText("You are in position:   " + rooms[rooms.length - 1]);
             }
         }
     }

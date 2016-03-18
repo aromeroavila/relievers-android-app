@@ -90,7 +90,7 @@ public class RoomListAdapter extends BaseAdapter {
                 mResources.getDrawable(R.drawable.green_round_corners) : mResources.getDrawable(R.drawable.red_round_corners));
 
         viewHolder.time.setText(room.isAvailable() ?
-                "Run!! It's been free for " : "Colleague slacking for ");
+                "Run!! It's been free for  " : "Employee slacking off for  ");
         viewHolder.chronometer.stop();
         viewHolder.chronometer.setBase(SystemClock.elapsedRealtime());
         viewHolder.chronometer.start();
